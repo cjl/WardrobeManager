@@ -26,6 +26,10 @@ public class MainAct extends BaseSlidingFragmentActivity implements
 	private final String LIST_IMAGEVIEW = "img";
 
 	private SlidingMenu sm;
+	
+	private boolean mIsTitleHide = false;
+	private boolean mIsAnim = false;
+	
 	/**连续按两次返回键就退出*/
 	private int keyBackClickCount=0;
 
@@ -104,14 +108,13 @@ public class MainAct extends BaseSlidingFragmentActivity implements
 		return super.onKeyDown(keyCode, event);
 	}
 
-	private boolean mIsAnim = false;
 	private float lastX = 0;
 	private float lastY = 0;
 	@Override
 	public boolean dispatchTouchEvent(MotionEvent event) {
 		// TODO Auto-generated method stub
 		super.dispatchTouchEvent(event);
-		if (mIsAnim ) {
+		if (!mIsAnim) {
 			return false;
 		}
 		final int action = event.getAction();
@@ -130,25 +133,33 @@ public class MainAct extends BaseSlidingFragmentActivity implements
 			boolean down = y > lastY ? true : false;
 			lastY = y;
 			lastX = x;
-            
-			if (dX < 8 && dY > 8  && !down) {
+			if (dX < 8 && dY > 8 && !mIsTitleHide && !down) {
 				Animation anim = AnimationUtils.loadAnimation(
 						MainAct.this, R.anim.push_top_in);
+//				anim.setFillAfter(true);
 				anim.setAnimationListener(MainAct.this);
-			} else if (dX < 8 && dY > 8  && down) {
+				//title.startAnimation(anim);
+			} else if (dX < 8 && dY > 8 && mIsTitleHide && down) {
 				Animation anim = AnimationUtils.loadAnimation(
 						MainAct.this, R.anim.push_top_out);
+//				anim.setFillAfter(true);
 				anim.setAnimationListener(MainAct.this);
+				//title.startAnimation(anim);
 			} else {
 				return false;
 			}
-			mIsAnim = true;
+			mIsTitleHide = !mIsTitleHide;
 			break;
 		default:
 			return false;
 		}
 		return false;
-	}  
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+	} 
 	
 	/**
 	 * 初始化SlidingMenu
